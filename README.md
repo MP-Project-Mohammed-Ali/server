@@ -26,9 +26,19 @@ Website about legal advice with many lawyer that have more experience and the us
 |Method         |Path           |Request                        |
 | ------------- | ------------- |-------------------------------|
 | POST          | /singup       | {name,email,password,role}    |
-| POST          | /login        | {name,email,password}         |
-| POST          | /newlawyer    | {name,}                       |
-|               |               |                               |
+| POST          | /auth/login   | {email,password}              |
+| POST          | /auth/logout  | (empty)                       |
+| POST          | /createrole   | {role,permissions}            |
+| GET           | /showuser     |                               |
+| DELETE        | /auth/deluse/:id|                             |
+| POST          | /auth/addcase | {title,descraption,state}     |
+| GET           | /auth/showcase|                               |
+| PUT           | /auth/updatcase|                              | 
+| DELETE        | /auth/delcase/:id|                            |
+| POST          | /auth/adddetils|{title,descraption,img,comment}|
+| GET           | /auth/showdetils|                             |
+| PUT           | /auth/updatedetils/:id|                       |
+| DELETE        | /auth/deldetils/:id|                          |
 
 ![UML Diagram](https://github.com/MP-Project-Mohammed-Ali/server/blob/main/diagram/UML%20Diagram%20(1).png)
 
