@@ -1,5 +1,8 @@
 # server
 
+## Description :
+Website about legal advice with many lawyer that have more experience and the user you can ask the lawyer about any question about law
+
 ## User Stories:
 
 - **Signup:**  I can sign up to website to complete register information 
@@ -24,11 +27,14 @@
 | ------------- | ------------- |-------------------------------|
 | POST          | /singup       | {name,email,password,role}    |
 | POST          | /login        | {name,email,password}         |
-|               |               |                               |
+| POST          | /newlawyer    | {name,}                       |
 |               |               |                               |
 
+![UML Diagram](https://github.com/MP-Project-Mohammed-Ali/server/blob/main/diagram/UML%20Diagram%20(1).png)
+
+![ER Diagram](https://github.com/MP-Project-Mohammed-Ali/server/blob/main/diagram/ER%20Diagram.png)
 
 
 
 ## Trello link:
-[Trello website](https://trello.com/b/wgen9s3X/mp-project-mohammed-ali-backend)
+[Trello website](https://trello.com/b/wgen9s3X/mp-project-mohammed-ali)
