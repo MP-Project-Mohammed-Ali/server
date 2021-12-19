@@ -82,7 +82,7 @@ Website about legal advice with many lawyer that have more experience and the us
 | PUT           | /auth/updatedetils/:id|                       |
 | DELETE        | /auth/deldetils/:id|                          |
 
-![UML Diagram](https://github.com/MP-Project-Mohammed-Ali/server/blob/main/diagram/UML%20Diagram%20(1).png)
+![UML Diagram](https://github.com/MP-Project-Mohammed-Ali/server/blob/main/diagram/UML%20Diagram%20V1%20(1).png)
 
 ![ER Diagram](https://github.com/MP-Project-Mohammed-Ali/server/blob/main/diagram/ER%20Diagram.png)
 
