@@ -16,7 +16,7 @@ const create = (req, res) => {
     });
 };
 
-const getrole = (res) => {
+const getrole = (req,res) => {
   roleModel
     .find({})
     .then((result) => {
