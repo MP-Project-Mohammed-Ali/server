@@ -8,8 +8,11 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-const userRouter=require('./routers/routes/user');
-app.use(userRouter)
+const userRouter = require("./routers/routes/user");
+app.use(userRouter);
+
+const roleRouter = require("./routers/routes/role");
+app.use(roleRouter);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
