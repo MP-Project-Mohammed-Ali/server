@@ -8,6 +8,9 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+const userRouter=require('./routers/routes/user');
+app.use(userRouter)
+
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`PORT is RUN ON ${PORT} NOW DON'T WORRY `);

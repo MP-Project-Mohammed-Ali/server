@@ -10,6 +10,7 @@ const user = new mongoose.Schema({
   ststes: { type: String, enum: ["Pending", "Active"], default: "Pending" },
 });
 
-module.exports = mongoose.module("User", user);
+module.exports = mongoose.model("User", user);
+
 
 //This file Done

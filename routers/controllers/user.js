@@ -10,6 +10,7 @@ const register = async (req, res) => {
   const savePassword = await bcrypt.hash(password, SALT);
 
   const newUser = new userModel({
+    name,
     email: saveEmail,
     password: savePassword,
     role,
@@ -24,4 +25,5 @@ const register = async (req, res) => {
     });
 };
 
-module.exports = { register };
+module.exports =  register ;
+
