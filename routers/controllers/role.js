@@ -16,7 +16,7 @@ const create = (req, res) => {
     });
 };
 
-const getrole = (req,res) => {
+const getrole = (req, res) => {
   roleModel
     .find({})
     .then((result) => {
@@ -28,3 +28,6 @@ const getrole = (req,res) => {
 };
 
 module.exports = { create, getrole };
+
+
+//This File Done V1
