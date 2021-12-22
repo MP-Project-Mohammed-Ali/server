@@ -8,6 +8,8 @@ const user = new mongoose.Schema({
   isDelete: { type: Boolean, default: false },
   // FiledOfExpertise: { type: String, required: true },
   ststes: { type: String, enum: ["Pending", "Active"], default: "Pending" },
+  verified: { type: Boolean, default: false },
+  resetlink: { type: String, default: "" },
 });
 
 module.exports = mongoose.model("User", user);
