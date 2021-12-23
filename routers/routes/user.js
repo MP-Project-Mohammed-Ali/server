@@ -27,7 +27,7 @@ const authentication = require("./../middleware/authentication");
 userRoute.post("/resgister", resgister);
 userRoute.get('/activate/:token', activate);
 userRoute.post("/login", login);
-
+userRoute.get("/showuser",getuser)
 // userRoute.post('/forgott', forgotPassword);
 // userRoute.get('/forgot/:token', gotoReset);
 // userRoute.post('/reset/:id', resetPassword);
