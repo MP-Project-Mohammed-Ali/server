@@ -1,11 +1,35 @@
+// const express = require("express");
+// const {register,login,activate} = require("./../controllers/user");
+// const userRouter = express.Router();
+
+// userRouter.post("/singup", register);
+// userRouter.post("/login",login)
+// userRouter.get('/activate/:token', activate);
+
+// module.exports = userRouter;
+
+
+// //This File need some improvements
+
 const express = require("express");
-const {register,login} = require("./../controllers/user");
-const userRouter = express.Router();
-
-userRouter.post("/singup", register);
-userRouter.post("/login",login)
-
-module.exports = userRouter;
+const userRoute = express.Router();
 
 
-//This File need some improvements
+const {
+  resgister,
+  activate,
+  login,getuser
+} = require("./../controllers/user");
+const authentication = require("./../middleware/authentication");
+
+
+
+userRoute.post("/resgister", resgister);
+userRoute.get('/activate/:token', activate);
+userRoute.post("/login", login);
+
+// userRoute.post('/forgott', forgotPassword);
+// userRoute.get('/forgot/:token', gotoReset);
+// userRoute.post('/reset/:id', resetPassword);
+
+module.exports = userRoute;

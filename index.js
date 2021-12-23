@@ -14,6 +14,9 @@ app.use(userRouter);
 const roleRouter = require("./routers/routes/role");
 app.use(roleRouter);
 
+const caseRouter = require("./routers/routes/cases");
+app.use(caseRouter);
+
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`PORT is RUN ON ${PORT} NOW DON'T WORRY `);
