@@ -15,7 +15,7 @@ const SALT = Number(process.env.SALT);
 const CLIENT_URL = "http://localhost:4000";
 
 const resgister = (req, res) => {
-  const { name, email, password, password2 } = req.body;
+  const { name, email, password, password2, type } = req.body;
   let errors = [];
 
   if (!name || !email || !password || !password2) {
@@ -37,6 +37,7 @@ const resgister = (req, res) => {
       email,
       password,
       password2,
+      type,
     });
   } else {
     userModel.findOne({ email: email }).then((user) => {
@@ -51,9 +52,9 @@ const resgister = (req, res) => {
         });
       } else {
         const oauth2Client = new OAuth2(
-          "173872994719-pvsnau5mbj47h0c6ea6ojrl7gjqq1908.apps.googleusercontent.com", // ClientID
-          "OKXIYR14wBB_zumf30EC__iJ", // Client Secret
-          "https://developers.google.com/oauthplayground" // Redirect URL
+          "173872994719-pvsnau5mbj47h0c6ea6ojrl7gjqq1908.apps.googleusercontent.com",
+          "OKXIYR14wBB_zumf30EC__iJ",
+          "https://developers.google.com/oauthplayground"
         );
 
         oauth2Client.setCredentials({
@@ -87,11 +88,11 @@ const resgister = (req, res) => {
         });
 
         const mailOptions = {
-          from: '"Auth Admin" <nodejsa@gmail.com>', // sender address
-          to: email, // list of receivers
-          subject: "Account Verification: NodeJS Auth ✔", // Subject line
+          from: '"Auth Admin" <nodejsa@gmail.com>',
+          to: email,
+          subject: "Account Verification: NodeJS Auth ✔",
           generateTextFromHTML: true,
-          html: output, // html body
+          html: output,
         };
 
         transporter.sendMail(mailOptions, (error, info) => {
@@ -103,8 +104,7 @@ const resgister = (req, res) => {
           } else {
             console.log("Mail sent : %s", info.response);
             res.status(200).json({
-              message:
-                "Activation link sent to email.",
+              message: "Activation link sent to email.",
             });
           }
         });
@@ -166,28 +166,32 @@ const login = (req, res) => {
       .then(async (result) => {
         // console.log(result);
         if (result) {
-          if (email === result.email || name === result.name) {
-            const payload = {
-              id: result._id,
-              role: result.role,
-            };
-            const options = {
-              expiresIn: "30m",
-            };
-            const token = jwt.sign(payload, SECRT_KEY, options);
-            console.log(token);
-            const unhashPassword = await bcrypt.compare(
-              password,
-              result.password
-            );
-            console.log(unhashPassword);
-            if (unhashPassword) {
-              res.status(200).json({ result, token });
-            } else {
-              res.status(200).json("invalid name or password 1");
-            }
+          if (result.isDelete) {
+            res.status(400).json("email is not exist");
           } else {
-            res.status(200).json("invalid name or password 2");
+            if (email === result.email || name === result.name) {
+              const payload = {
+                id: result._id,
+                role: result.role,
+              };
+              const options = {
+                expiresIn: "30m",
+              };
+              const token = jwt.sign(payload, SECRT_KEY, options);
+              console.log(token);
+              const unhashPassword = await bcrypt.compare(
+                password,
+                result.password
+              );
+              console.log(unhashPassword);
+              if (unhashPassword) {
+                res.status(200).json({ result, token });
+              } else {
+                res.status(200).json("invalid name or password 1");
+              }
+            } else {
+              res.status(200).json("invalid name or password 2");
+            }
           }
         } else {
           res.status(200).json("name or password does not exist");
@@ -210,4 +214,19 @@ const getuser = (req, res) => {
     });
 };
 
-module.exports = { resgister, activate, login, getuser };
+const deleteuser = (req, res) => {
+  console.log(req);
+  const { id } = req.params;
+  userModel
+    .findByIdAndUpdate(id, { $set: { isDelete: true } })
+    .exec()
+    .then((result) => {
+      console.log(result);
+      res.status(200).json("Deleted");
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
+};
+
+module.exports = { resgister, activate, login, getuser, deleteuser };

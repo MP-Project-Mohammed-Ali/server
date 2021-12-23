@@ -8,26 +8,25 @@
 
 // module.exports = userRouter;
 
-
 // //This File need some improvements
 
 const express = require("express");
 const userRoute = express.Router();
 
-
 const {
   resgister,
   activate,
-  login,getuser
+  login,
+  getuser,
+  deleteuser,
 } = require("./../controllers/user");
 const authentication = require("./../middleware/authentication");
 
-
-
 userRoute.post("/resgister", resgister);
-userRoute.get('/activate/:token', activate);
+userRoute.get("/activate/:token", activate);
 userRoute.post("/login", login);
-userRoute.get("/showuser",getuser)
+userRoute.get("/showuser", getuser);
+
 // userRoute.post('/forgott', forgotPassword);
 // userRoute.get('/forgot/:token', gotoReset);
 // userRoute.post('/reset/:id', resetPassword);
