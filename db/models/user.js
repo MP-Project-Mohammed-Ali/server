@@ -6,8 +6,8 @@ const user = new mongoose.Schema({
   password: { type: String, required: true },
   role: { type: mongoose.Schema.Types.ObjectId, ref: "Role" },
   isDelete: { type: Boolean, default: false },
-  case:{type: mongoose.Schema.Types.ObjectId, ref: "Cases" },
-  type:{type:Boolean}
+  case: { type: mongoose.Schema.Types.ObjectId, ref: "Cases" },
+  type: { type: Boolean },
   // FiledOfExpertise: { type: String, required: true },
   // ststes: { type: String, enum: ["Pending", "Active"], default: "Pending" },
   // verified: { type: Boolean, default: false },
