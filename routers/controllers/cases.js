@@ -20,7 +20,7 @@ const newCase = (req, res) => {
     });
 };
 
-// Here funcation was a problem 
+// Here funcation was a problem
 const getCase = (req, res) => {
   console.log("this request on line 24", req.params);
   const { id } = req.params;
@@ -54,21 +54,37 @@ const showcase = (req, res) => {
       res.status(400).json(err);
     });
 };
- const updateCase =(req,res)=>{
-   const {id}=req.params;
-   const {Descraption}=req.body;
-   
-   casesModule.findByIdAndUpdate(id,{$set:{Descraption:Descraption}}).then((result)=>{
-     if(result){
-       res.status(200).json("updated")
-     } else{
-       res.status(400).json(err)
-     }
-   }).catch((err)=>{
-     res.status(400).json(err)
-   })
+const updateCase = (req, res) => {
+  const { id } = req.params;
+  const { Descraption } = req.body;
 
- }
+  casesModule
+    .findByIdAndUpdate(id, { $set: { Descraption: Descraption } })
+    .then((result) => {
+      if (result) {
+        res.status(200).json("updated");
+      } else {
+        res.status(400).json(err);
+      }
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
+};
 
-module.exports = { newCase, getCase, showcase,updateCase };
+const deleteCase = (req, res) => {
+  const { id } = req.params;
+  casesModule
+    .findByIdAndUpdate(id, { $set: { isDel: true } })
+    .exec()
+    .then((result) => {
+      console.log(result);
+      res.status(200).json("case is delete");
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
+};
 
+
+module.exports = { newCase, getCase, showcase, updateCase, deleteCase };
