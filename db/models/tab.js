@@ -6,6 +6,6 @@ const tab = new mongoose.Schema({
   image: { type: String, required: true },
 });
 
-module.exports = mongoose.module("Tab", tab);
+module.exports = mongoose.model("Tab", tab);
 
 //This File Done

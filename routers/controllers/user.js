@@ -1,54 +1,35 @@
-const userModel = require("./../../db/models/user");
+const userModel = require("../../db/models/user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const nodemiler = require("nodemailer");
-// const passport = require("passport");
 const nodemailer = require("nodemailer");
+
 const { google } = require("googleapis");
+
 const OAuth2 = google.auth.OAuth2;
 
-// Get this date From .env
-const SALT = Number(process.env.SALT);
+//Get this date From .env
 const SECRT_KEY = process.env.SECRT_KEY;
 const SECRET_RESET_KEY = process.env.SECRET_RESET_KEY;
+const SALT = Number(process.env.SALT);
 
-const CLIENT_URL = "http://localhost:3000";
+const CLIENT_URL = "http://localhost:4000";
 
-
-// simple register to test
-// const register = async (req, res) => {
-//   const { name, email, password } = req.body;
-//   const saveEmail = email.toLowerCase();
-//   const savePassword = await bcrypt.hash(password, SALT);
-
-//   const newUser = new userModel({
-//     name,
-//     email: saveEmail,
-//     password: savePassword,
-//   });
-//   newUser
-//     .save()
-//     .then((result) => {
-//       res.json(result);
-//     })
-//     .catch((err) => {
-//       res.json(err);
-//     });
-// };
-
-const register = (req, res) => {
-  const { name, email, password, password2 } = req.body;
+const resgister = (req, res) => {
+  const { name, email, password, password2, type } = req.body;
   let errors = [];
 
   if (!name || !email || !password || !password2) {
-    errors.push({ msg: "enter all file" });
+    errors.push({ msg: "Enter all fields" });
   }
+
   if (password != password2) {
-    errors.push({ msg: "password do not mutch" });
+    errors.push({ msg: "Passwords do not match" });
   }
+
   if (password.length < 8) {
-    errors.push({ msg: "password must be more 8 characters" });
+    errors.push({ msg: "Password must be at least 8 characters" });
   }
+
   if (errors.length > 0) {
     res.status(200).json({
       errors,
@@ -56,12 +37,12 @@ const register = (req, res) => {
       email,
       password,
       password2,
+      type,
     });
   } else {
     userModel.findOne({ email: email }).then((user) => {
-      // console.log(user);
       if (user) {
-        errors.push({ msg: "email already exist" });
+        errors.push({ msg: "Email address already registered" });
         res.status(200).json({
           errors,
           name,
@@ -70,27 +51,29 @@ const register = (req, res) => {
           password2,
         });
       } else {
-        const oauth2Clinent = new OAuth2(
+        const oauth2Client = new OAuth2(
           "173872994719-pvsnau5mbj47h0c6ea6ojrl7gjqq1908.apps.googleusercontent.com",
           "OKXIYR14wBB_zumf30EC__iJ",
           "https://developers.google.com/oauthplayground"
         );
 
-        oauth2Clinent.setCredentials({
+        oauth2Client.setCredentials({
           refresh_token:
             "1//04T_nqlj9UVrVCgYIARAAGAQSNwF-L9IrGm-NOdEKBOakzMn1cbbCHgg2ivkad3Q_hMyBkSQen0b5ABfR8kPR18aOoqhRrSlPm9w",
         });
+        const accessToken = oauth2Client.getAccessToken();
 
-        const accessToken = oauth2Clinent.getAccessToken();
         const token = jwt.sign({ name, email, password }, SECRT_KEY, {
           expiresIn: "30m",
         });
-        const output = ` <h3> Please click on below link to activate your account </h3>
-        <p>${CLIENT_URL}</p>
-        <h5><b>NOTE : </b> The abouve activation link expires in 30 minutes</h5>`;
 
+        const output = `
+                  <h2>Please click on below link to activate your account</h2>
+                  <p>${CLIENT_URL}/activate/${token}</p>
+                  <p><b>NOTE: </b> The above activation link expires in 30 minutes.</p>
+                  `;
 
-        const transporter = nodemiler.createTransport({
+        const transporter = nodemailer.createTransport({
           service: "gmail",
           auth: {
             type: "OAuth2",
@@ -105,23 +88,23 @@ const register = (req, res) => {
         });
 
         const mailOptions = {
-          from: `"Auth Admin"<nodejsa@gmail.com>`,
+          from: '"Auth Admin" <nodejsa@gmail.com>',
           to: email,
-          subject: "Account Verification: NodeJS Auth ",
+          subject: "Account Verification: NodeJS Auth ✔",
           generateTextFromHTML: true,
           html: output,
         };
-        console.log(mailOptions);
+
         transporter.sendMail(mailOptions, (error, info) => {
           if (error) {
+            console.log(error);
             res.status(200).json({
-              err: "someting went wrong on our end. Please register again",
+              err: "Something went wrong on our end. Please register again.",
             });
           } else {
-            console.log("Mail send :%s", info.response);
+            console.log("Mail sent : %s", info.response);
             res.status(200).json({
-              massage:
-                "Activation link sent to email ID. Please activate to log in.",
+              message: "Activation link sent to email.",
             });
           }
         });
@@ -130,67 +113,120 @@ const register = (req, res) => {
   }
 };
 
-const resetPassword = (req, res) => {
-  const { password, password2 } = req.body;
-  const id = req.params.id;
-  if (!password || !password2) {
-    res.json({ error: "please enter all fields" });
-  } else if (password.length < 8) {
-    res.json({ error: "password must be at least 8 characters" });
-  } else if (password != password2) {
-    res.json({ error: "password do not match." });
-  } else {
-    bcrypt.genSalt(10, (err, salt) => {
-      bcrypt.hash(password, salt, (err, hash) => {
-        if (err) throw err;
-        password = hash;
-        userModel.findByIdAndUpdate(
-          { _id: id },
-          { password },
-          function (err, result) {
-            if (err) {
-              res.json({ error: "enter resetting password " });
-            } else {
-              res.json({ error: "password reset successfully" });
-            }
+const activate = (req, res) => {
+  const token = req.params.token;
+  if (token) {
+    jwt.verify(token, SECRT_KEY, (err, decodedToken) => {
+      if (err) {
+        res.json({ err: "Incorrect or expired link! Please register again." });
+      } else {
+        const { name, email, password } = decodedToken;
+        userModel.findOne({ email: email }).then(async (user) => {
+          if (user) {
+            res.json({ err: "Email already registered! Please log in." });
+          } else {
+            const hashedPassword = await bcrypt.hash(password, SALT);
+            const newUser = new userModel({
+              name,
+              email,
+              password: hashedPassword,
+            });
+
+            newUser.save().then((user) => {
+              res.json({ success: user });
+            });
+            // bcrypt.hash(newUser.password, 10, (err, hash) => {
+            //   if (err) throw err;
+            //   newUser.password = hash;
+            //   newUser
+            //     .save()
+            //     .then((user) => {
+            //       res.json({ success: user });
+            //     })
+            //     .catch((err) => console.log(err));
+            // });
           }
-        );
-      });
+        });
+      }
     });
+  } else {
+    console.log("Account activation error!");
   }
 };
-const login = async (req, res) => {
-  const { email, password } = req.body;
 
-  userModel
-    .findOne({ email })
-    .then(async (result) => {
-      if (result) {
-        if (result.email == email) {
-          const savePassword = await bcrypt.compare(password, result.password);
-          const payload = {
-            email,
-          };
-          if (savePassword) {
-            const token = jwt.sign(payload, SECRT_KEY);
-            res.status(200).json({ result, token });
+const login = (req, res) => {
+  console.log(req.body);
+  const { name, email, password } = req.body;
+  const SECRT_KEY = process.env.SECRT_KEY;
+  if (!((email || name) && password)) {
+    res.status(200).json({ msg: " fill all fields" });
+  } else {
+    userModel
+      .findOne({ $or: [{ name }, { email }] })
+      .then(async (result) => {
+        // console.log(result);
+        if (result) {
+          if (result.isDelete) {
+            res.status(400).json("email is not exist");
           } else {
-            res.status(400).json("Wrong email or password");
+            if (email === result.email || name === result.name) {
+              const payload = {
+                id: result._id,
+                role: result.role,
+              };
+              const options = {
+                expiresIn: "30m",
+              };
+              const token = jwt.sign(payload, SECRT_KEY, options);
+              console.log(token);
+              const unhashPassword = await bcrypt.compare(
+                password,
+                result.password
+              );
+              console.log(unhashPassword);
+              if (unhashPassword) {
+                res.status(200).json({ result, token });
+              } else {
+                res.status(200).json("invalid name or password 1");
+              }
+            } else {
+              res.status(200).json("invalid name or password 2");
+            }
           }
         } else {
-          res.status(400).json("Wrong email or password");
+          res.status(200).json("name or password does not exist");
         }
-      } else {
-        res.status(404).json("Email not exist");
-      }
+      })
+      .catch((err) => {
+        res.status(200).json(err);
+      });
+  }
+};
+
+const getuser = (req, res) => {
+  userModel
+    .find({})
+    .then((result) => {
+      res.status(200).json(result);
     })
     .catch((err) => {
-      res.json(err);
+      res.status(400).json(err);
     });
 };
 
-module.exports = { register, login };
+const deleteuser = (req, res) => {
+  console.log(req);
+  const { id } = req.params;
+  userModel
+    .findByIdAndUpdate(id, { $set: { isDelete: true } })
+    .exec()
+    .then((result) => {
+      console.log(result);
+      res.status(200).json("Deleted");
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
+};
 
-//This File need more improvements
-
-
+module.exports = { resgister, activate, login, getuser, deleteuser };
