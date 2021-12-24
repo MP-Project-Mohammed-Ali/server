@@ -8,6 +8,6 @@ caseRouter.post("/addcase", authentication, newCase);
 caseRouter.get("/showcase/:id", authentication, getCase);
 caseRouter.get("/showallcase", showcase);
 caseRouter.put("/update/:id",authentication,updateCase);
-
+caseRouter.delete("/del/:id",deleteCase)
 
 module.exports = caseRouter;
