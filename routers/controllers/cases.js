@@ -86,5 +86,4 @@ const deleteCase = (req, res) => {
     });
 };
 
-
 module.exports = { newCase, getCase, showcase, updateCase, deleteCase };
