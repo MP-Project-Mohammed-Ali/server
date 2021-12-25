@@ -14,8 +14,8 @@ app.use(userRouter);
 const roleRouter = require("./routers/routes/role");
 app.use(roleRouter);
 
-// const caseRouter = require("./routers/routes/cases");
-// app.use(caseRouter);
+const caseRouter = require("./routers/routes/cases");
+app.use(caseRouter);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
