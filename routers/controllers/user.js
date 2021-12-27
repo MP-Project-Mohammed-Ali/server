@@ -19,7 +19,7 @@ const transport = nodemailer.createTransport({
 
 //  REGISTER
 const Register = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, isLawyer } = req.body;
   const semail = email.toLowerCase();
   const hashpass = await bcrypt.hash(password, SALT);
   const characters = "0123456789";
@@ -34,6 +34,7 @@ const Register = async (req, res) => {
     password: hashpass,
     name,
     activeCode,
+    status: isLawyer ? process.env.PENDING : process.env.APPROVED,
   });
   newUser
     .save()

@@ -7,6 +7,7 @@ const {
   showcase,
   updateCase,
   deleteCase,
+  ChengeCaseStatus
 } = require("../controllers/cases");
 const authentication = require("../middleware/authentication");
 
@@ -15,5 +16,6 @@ caseRouter.get("/showcase/:id", authentication, getCase);
 caseRouter.get("/showallcase", showcase);
 caseRouter.put("/update/:id", authentication, updateCase);
 caseRouter.delete("/del/:id", deleteCase);
+caseRouter.put("/changcase/:id",ChengeCaseStatus)
 
 module.exports = caseRouter;

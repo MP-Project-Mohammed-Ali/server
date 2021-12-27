@@ -16,14 +16,15 @@ const user = new mongoose.Schema({
   status: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Status",
-    default: "61c856d9d665915a8a22cf04",
   },
   activeCode:{type:String},
   passwordCode:{type:String},
   activeAcount:{type:Boolean,default:false},
 
   // type: { type: Boolean },
-  // FiledOfExpertise: { type: String, required: true },
+  FieldOfExpertise: { type: String},
+  Education:{type:String},
+
   // ststes: { type: String, enum: ["Pending", "Active"], default: "Pending" },
 });
 

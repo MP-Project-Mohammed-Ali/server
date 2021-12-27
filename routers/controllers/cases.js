@@ -7,6 +7,9 @@ const newCase = (req, res) => {
   const newCases = new casesModel({
     title,
     Descraption,
+    status: isCase ? process.env.PENDING : process.env.APPROVED,
+    lawyer: req.token.id,
+    client:req.token.id,
   });
   newCases
     .save()
@@ -42,7 +45,7 @@ const getCase = (req, res) => {
 const showcase = (req, res) => {
   casesModel
     .find({ isDel: false })
-    .populate("tab" ," title Descraption -_id")
+    .populate("tab", " title Descraption -_id")
     .then((result) => {
       res.status(200).json(result);
     })
@@ -81,5 +84,29 @@ const deleteCase = (req, res) => {
       res.status(400).json(err);
     });
 };
+const ChengeCaseStatus = (req, res) => {
+  const { id } = req.params;
+  const { status_id } = req.body;
 
-module.exports = { newCase, getCase, showcase, updateCase, deleteCase };
+  userModel
+    .findByIdAndUpdate({ _id: id }, { status: status_id }, { new: true })
+    .then((result) => {
+      if (result) {
+        res.status(200).json(result);
+      } else {
+        res.status(404).json({ msg: ` ${id}` });
+      }
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
+};
+
+module.exports = {
+  newCase,
+  getCase,
+  showcase,
+  updateCase,
+  deleteCase,
+  ChengeCaseStatus,
+};
