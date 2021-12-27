@@ -17,6 +17,12 @@ app.use(roleRouter);
 const caseRouter = require("./routers/routes/cases");
 app.use(caseRouter);
 
+const tabRouter =require("./routers/routes/tab")
+app.use(tabRouter)
+
+const statusRouter =require("./routers/routes/status")
+app.use(statusRouter)
+
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`PORT is RUN ON ${PORT} NOW DON'T WORRY `);

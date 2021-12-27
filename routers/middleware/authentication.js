@@ -1,4 +1,3 @@
-//Create This File To Check The Information
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 
@@ -10,9 +9,8 @@ const authentication = (req, res, next) => {
     if (!req.headers.authorization)
       return res.status(403).json({ message: "forbidden" });
     const token = req.headers.authorization.split(" ")[1];
-    // console.log(token);
     const parssedToken = jwt.verify(token, SECRT_KEY);
-    // console.log(parssedToken);
+
     req.token = parssedToken;
     console.log(req.token);
     next();
