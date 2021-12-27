@@ -4,19 +4,29 @@ const user = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  role: { type: mongoose.Schema.Types.ObjectId, ref: "Role" },
+  role: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Role",
+    default: "61c579806eec66fd5a9a30b6",
+  },
   isDelete: { type: Boolean, default: false },
-  case: { type: mongoose.Schema.Types.ObjectId, ref: "Cases" },
-  type: { type: Boolean },
+  case: [{ type: mongoose.Schema.Types.ObjectId, ref: "Cases" }],
+  clients: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  laweyrs: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  status: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Status",
+    default: "61c856d9d665915a8a22cf04",
+  },
+  activeCode:{type:String},
+  passwordCode:{type:String},
+  activeAcount:{type:Boolean,default:false},
+
+  // type: { type: Boolean },
   // FiledOfExpertise: { type: String, required: true },
   // ststes: { type: String, enum: ["Pending", "Active"], default: "Pending" },
-  // verified: { type: Boolean, default: false },
-  // resetlink: { type: String, default: "" },
 });
 
 module.exports = mongoose.model("User", user);
 
 //This file Done
-
-
-

@@ -1,209 +1,211 @@
-const userModel = require("../../db/models/user");
+const userModel = require("./../../db/models/user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
+const passport = require("passport");
 
-const { google } = require("googleapis");
+require("dotenv").config();
 
-const OAuth2 = google.auth.OAuth2;
-
-//Get this date From .env
-const SECRT_KEY = process.env.SECRT_KEY;
-const SECRET_RESET_KEY = process.env.SECRET_RESET_KEY;
 const SALT = Number(process.env.SALT);
+const SECRET_RESET_KEY = process.env.SECRET_RESET_KEY;
 
-const CLIENT_URL = "http://localhost:4000";
+const transport = nodemailer.createTransport({
+  service: "Gmail",
+  auth: {
+    user: process.env.EMAIL,
+    pass: process.env.PASS,
+  },
+});
 
-const resgister = (req, res) => {
-  const { name, email, password, password2, type } = req.body;
-  let errors = [];
-
-  if (!name || !email || !password || !password2) {
-    errors.push({ msg: "Enter all fields" });
+//  REGISTER
+const Register = async (req, res) => {
+  const { name, email, password } = req.body;
+  const semail = email.toLowerCase();
+  const hashpass = await bcrypt.hash(password, SALT);
+  const characters = "0123456789";
+  let activeCode = "";
+  for (let i = 0; i < 4; i++) {
+    activeCode += characters.charAt(
+      Math.floor(Math.random() * characters.length)
+    );
   }
-
-  if (password != password2) {
-    errors.push({ msg: "Passwords do not match" });
-  }
-
-  if (password.length < 8) {
-    errors.push({ msg: "Password must be at least 8 characters" });
-  }
-
-  if (errors.length > 0) {
-    res.status(200).json({
-      errors,
-      name,
-      email,
-      password,
-      password2,
-      type,
+  const newUser = new userModel({
+    email: semail,
+    password: hashpass,
+    name,
+    activeCode,
+  });
+  newUser
+    .save()
+    .then((result) => {
+      transport
+        .sendMail({
+          from: process.env.EMAIL,
+          to: semail,
+          subject: "Please confirm your account",
+          html: `<h1>Email Confirmation</h1>
+              <h2>Hello ${semail}</h2>
+              <h4>CODE: ${activeCode}</h4>
+              <p>Thank you for registering. Please confirm your email by entring the code on the following link</p>
+              <a href=https://social-media-project-frontend.herokuapp.com/verify_account/${result._id}> Click here</a>
+              </div>`,
+        })
+        .catch((err) => console.log(err));
+      res.status(201).json(result);
+    })
+    .catch((err) => {
+      res.status(400).json(err);
     });
+};
+//  VERIFY_ACCOUNT
+const VerifyAccount = async (req, res) => {
+  const { id, code } = req.body;
+  const user = await userModel.findOne({ _id: id });
+  console.log("user on line 419", user);
+  if (user.activeCode == code) {
+    userModel
+      .findByIdAndUpdate(
+        id,
+        { activeAcount: true, activeCode: "" },
+        { new: true }
+      )
+      .then((result) => {
+        res.status(200).json(result);
+      })
+      .catch((error) => {
+        res.status(400).json(error);
+      });
   } else {
-    userModel.findOne({ email: email }).then((user) => {
-      if (user) {
-        errors.push({ msg: "Email address already registered" });
-        res.status(200).json({
-          errors,
-          name,
-          email,
-          password,
-          password2,
-        });
-      } else {
-        const oauth2Client = new OAuth2(
-          "173872994719-pvsnau5mbj47h0c6ea6ojrl7gjqq1908.apps.googleusercontent.com",
-          "OKXIYR14wBB_zumf30EC__iJ",
-          "https://developers.google.com/oauthplayground"
-        );
-
-        oauth2Client.setCredentials({
-          refresh_token:
-            "1//04T_nqlj9UVrVCgYIARAAGAQSNwF-L9IrGm-NOdEKBOakzMn1cbbCHgg2ivkad3Q_hMyBkSQen0b5ABfR8kPR18aOoqhRrSlPm9w",
-        });
-        const accessToken = oauth2Client.getAccessToken();
-
-        const token = jwt.sign({ name, email, password }, SECRT_KEY, {
-          expiresIn: "30m",
-        });
-
-        const output = `
-                  <h2>Please click on below link to activate your account</h2>
-                  <p>${CLIENT_URL}/activate/${token}</p>
-                  <p><b>NOTE: </b> The above activation link expires in 30 minutes.</p>
-                  `;
-
-        const transporter = nodemailer.createTransport({
-          service: "gmail",
-          auth: {
-            type: "OAuth2",
-            user: "nodejsa@gmail.com",
-            clientId:
-              "173872994719-pvsnau5mbj47h0c6ea6ojrl7gjqq1908.apps.googleusercontent.com",
-            clientSecret: "OKXIYR14wBB_zumf30EC__iJ",
-            refreshToken:
-              "1//04T_nqlj9UVrVCgYIARAAGAQSNwF-L9IrGm-NOdEKBOakzMn1cbbCHgg2ivkad3Q_hMyBkSQen0b5ABfR8kPR18aOoqhRrSlPm9w",
-            accessToken: accessToken,
-          },
-        });
-
-        const mailOptions = {
-          from: '"Auth Admin" <nodejsa@gmail.com>',
-          to: email,
-          subject: "Account Verification: NodeJS Auth ✔",
-          generateTextFromHTML: true,
-          html: output,
-        };
-
-        transporter.sendMail(mailOptions, (error, info) => {
-          if (error) {
-            console.log(error);
-            res.status(200).json({
-              err: "Something went wrong on our end. Please register again.",
-            });
-          } else {
-            console.log("Mail sent : %s", info.response);
-            res.status(200).json({
-              message: "Activation link sent to email.",
-            });
-          }
-        });
-      }
-    });
+    res.status(400).json("Wrong code..");
   }
 };
 
-const activate = (req, res) => {
-  const token = req.params.token;
-  if (token) {
-    jwt.verify(token, SECRT_KEY, (err, decodedToken) => {
-      if (err) {
-        res.json({ err: "Incorrect or expired link! Please register again." });
-      } else {
-        const { name, email, password } = decodedToken;
-        userModel.findOne({ email: email }).then(async (user) => {
-          if (user) {
-            res.json({ err: "Email already registered! Please log in." });
-          } else {
-            const hashedPassword = await bcrypt.hash(password, SALT);
-            const newUser = new userModel({
-              name,
-              email,
-              password: hashedPassword,
-            });
-
-            newUser.save().then((user) => {
-              res.json({ success: user });
-            });
-            // bcrypt.hash(newUser.password, 10, (err, hash) => {
-            //   if (err) throw err;
-            //   newUser.password = hash;
-            //   newUser
-            //     .save()
-            //     .then((user) => {
-            //       res.json({ success: user });
-            //     })
-            //     .catch((err) => console.log(err));
-            // });
-          }
-        });
-      }
-    });
+// CHECK_EMAIL
+const CheckEmail = async (req, res) => {
+  const { email } = req.body;
+  const user = await userModel.findOne({ email });
+  if (user) {
+    let passwordCode = "";
+    const characters = "0123456789";
+    for (let i = 0; i < 4; i++) {
+      passwordCode += characters.charAt(
+        Math.floor(Math.random() * characters.length)
+      );
+    }
+    userModel
+      .findByIdAndUpdate(user._id, { passwordCode }, { new: true })
+      .then((result) => {
+        transport
+          .sendMail({
+            from: process.env.EMAIL,
+            to: result.email,
+            subject: "Reset Your Password",
+            html: `<h1>Reset Your Password</h1>
+              <h2>Hello ${result.username}</h2>
+              <h4>CODE: ${passwordCode}</h4>
+              <p>Please enter the code on the following link and reset your password</p>
+              <a href=https://mohammed.com/reset_password/${result._id}> Click here</a>
+              </div>`,
+          })
+          .catch((err) => console.log(err));
+        res.status(200).json(result);
+      })
+      .catch((error) => {
+        res.status(400).json(error);
+      });
   } else {
-    console.log("Account activation error!");
+    res.status(400).json("No user with this email");
   }
 };
 
-const login = (req, res) => {
-  console.log(req.body);
+// RESET_PASSWORD
+const ResetPassword = async (req, res) => {
+  const { id, code, password } = req.body;
+  const user = await userModel.findOne({ _id: id });
+  if (user.passwordCode == code) {
+    const hashedPassword = await bcrypt.hash(password, SALT);
+    userModel
+      .findByIdAndUpdate(
+        id,
+        { password: hashedPassword, passwordCode: "" },
+        { new: true }
+      )
+      .then((result) => {
+        res.status(200).json(result);
+      })
+      .catch((error) => {
+        res.status(400).json(error);
+      });
+  } else {
+    res.status(400).json("Wrong Code...");
+  }
+};
+
+//LOGIN
+const Login = (req, res) => {
+  // console.log(req.body);
   const { name, email, password } = req.body;
   const SECRT_KEY = process.env.SECRT_KEY;
-  if (!((email || name) && password)) {
-    res.status(200).json({ msg: " fill all fields" });
-  } else {
-    userModel
-      .findOne({ $or: [{ name }, { email }] })
-      .then(async (result) => {
-        // console.log(result);
-        if (result) {
-          if (result.isDelete) {
-            res.status(400).json("email is not exist");
-          } else {
-            if (email === result.email || name === result.name) {
-              const payload = {
-                id: result._id,
-                role: result.role,
-              };
-              const options = {
-                expiresIn: "30m",
-              };
-              const token = jwt.sign(payload, SECRT_KEY, options);
-              console.log(token);
-              const unhashPassword = await bcrypt.compare(
-                password,
-                result.password
-              );
-              console.log(unhashPassword);
-              if (unhashPassword) {
-                res.status(200).json({ result, token });
-              } else {
-                res.status(200).json("invalid name or password 1");
-              }
+  userModel
+    .findOne({ $or: [{ email }, { name }] })
+
+    .then(async (result) => {
+      console.log("the result", result);
+      if (result) {
+        console.log(result.email);
+        if (email == result.email) {
+          console.log(email);
+          const savePassword = await bcrypt.compare(password, result.password);
+          console.log(savePassword);
+          const payload = {
+            role: result.role,
+            id: result._id,
+            email: result.email,
+          };
+          console.log("this is payload", payload);
+          console.log("the result on line 520", result);
+
+          if (savePassword) {
+            if (result.activeAcount == true) {
+              const token = jwt.sign(payload, SECRT_KEY);
+              res.status(200).json({ result, token });
             } else {
-              res.status(200).json("invalid name or password 2");
+              res.status(400).json("please Active your account");
             }
+          } else {
+            res.status(400).json("Wrong email or password 1");
           }
         } else {
-          res.status(200).json("name or password does not exist");
+          res.status(400).json("Wrong email or password 2 ");
         }
-      })
-      .catch((err) => {
-        res.status(200).json(err);
-      });
-  }
+      } else {
+        res.status(404).json("Email not exist");
+      }
+    })
+    .catch((err) => {
+      res.json(err);
+    });
 };
 
-const getuser = (req, res) => {
+const ChengeUserStatus = (req, res) => {
+  const { id } = req.params;
+  const { status_id } = req.body;
+
+  userModel
+    .findByIdAndUpdate({ _id: id }, { status: status_id }, { new: true })
+    .then((result) => {
+      if (result) {
+        res.status(200).json(result);
+      } else {
+        res.status(404).json({ msg: ` ${id}` });
+      }
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
+};
+
+const GetUser = (req, res) => {
   userModel
     .find({})
     .then((result) => {
@@ -214,7 +216,7 @@ const getuser = (req, res) => {
     });
 };
 
-const deleteuser = (req, res) => {
+const DeleteUser = (req, res) => {
   console.log(req);
   const { id } = req.params;
   userModel
@@ -229,4 +231,13 @@ const deleteuser = (req, res) => {
     });
 };
 
-module.exports = { resgister, activate, login, getuser, deleteuser };
+module.exports = {
+  Register,
+  VerifyAccount,
+  CheckEmail,
+  ResetPassword,
+  Login,
+  ChengeUserStatus,
+  GetUser,
+  DeleteUser,
+};
