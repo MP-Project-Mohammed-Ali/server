@@ -1,10 +1,11 @@
 const express = require("express");
 const tabRouter = express.Router();
-const createtab= require('../controllers/tab')
+const { CreateTab, GetTab } = require("../controllers/tab");
 
 const authentication = require("../middleware/authentication");
 
+tabRouter.post("/createtab",authentication, CreateTab);
 
-tabRouter.post("/createtab",authentication, createtab);
+tabRouter.get("/get/tab",authentication,GetTab)
 
 module.exports = tabRouter;
