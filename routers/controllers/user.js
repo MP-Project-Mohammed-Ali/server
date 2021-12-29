@@ -48,7 +48,7 @@ const Register = async (req, res) => {
               <h2>Hello ${semail}</h2>
               <h4>CODE: ${activeCode}</h4>
               <p>Thank you for registering. Please confirm your email by entring the code on the following link</p>
-              <a href=https://social-media-project-frontend.herokuapp.com/verify_account/${result._id}> Click here</a>
+              <a href=https://mohammed.com/verify_account/${result._id}> Click here</a>
               </div>`,
         })
         .catch((err) => console.log(err));
