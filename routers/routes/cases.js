@@ -12,10 +12,10 @@ const {
 const authentication = require("../middleware/authentication");
 
 caseRouter.post("/addcase", authentication, newCase);
-caseRouter.get("/showcase/:id", authentication, getCase);
-caseRouter.get("/showallcase", showcase);
+caseRouter.get("/show/case/:id", getCase);
+caseRouter.post("/show/allcase", showcase);
 caseRouter.put("/update/:id", authentication, updateCase);
-caseRouter.delete("/del/:id", deleteCase);
-caseRouter.put("/changcase/:id",ChengeCaseStatus)
+caseRouter.delete("/delete/case/:id", deleteCase);
+caseRouter.put("/chang/case/:id",ChengeCaseStatus)
 
 module.exports = caseRouter;

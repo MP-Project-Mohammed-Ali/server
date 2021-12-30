@@ -2,14 +2,13 @@ const casesModel = require("../../db/models/cases");
 const tabModel = require("../../db/models/tab");
 
 const newCase = (req, res) => {
-  console.log("request from line 5", req.body);
-  const { title, Descraption } = req.body;
+  const { title, Descraption, laywer,client } = req.body;
   const newCases = new casesModel({
     title,
     Descraption,
-    status: isCase ? process.env.PENDING : process.env.APPROVED,
-    lawyer: req.token.id,
-    client:req.token.id,
+    // status: isCase ? process.env.PENDING : process.env.APPROVED,
+    laywer,
+    client
   });
   newCases
     .save()
@@ -30,7 +29,7 @@ const getCase = (req, res) => {
 
   try {
     casesModel.findOne({ _id: id }).then((result) => {
-      console.log("this is result on line 30", result);
+      console.log("this is result on line 33", result);
       if (result.isDel == false) {
         res.status(200).json(result);
       } else {
@@ -43,9 +42,11 @@ const getCase = (req, res) => {
   }
 };
 const showcase = (req, res) => {
+  const { laywer,client } = req.body;
+  console.log(laywer);
   casesModel
-    .find({ isDel: false })
-    .populate("tab", " title Descraption -_id")
+    .find({laywer, client })
+    // .populate("tab", " title Descraption -_id")
     .then((result) => {
       res.status(200).json(result);
     })
@@ -102,6 +103,7 @@ const ChengeCaseStatus = (req, res) => {
     });
 };
 
+
 module.exports = {
   newCase,
   getCase,
@@ -109,4 +111,5 @@ module.exports = {
   updateCase,
   deleteCase,
   ChengeCaseStatus,
+
 };
