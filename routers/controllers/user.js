@@ -56,8 +56,7 @@ const Register = async (req, res) => {
               <h2>Hello ${semail}</h2>
               <h4>CODE: ${activeCode}</h4>
               <p>Thank you for registering. Please confirm your email by entring the code on the following link</p>
-              <a href=https:/localhost:3000/active/${result._id}> Click here</a>
-              </div>`,
+              <a href=https:/localhost:3000/active/${result._id}> Click here</a>`,
         })
         .catch((err) => console.log(err));
       res.status(201).json(result);
