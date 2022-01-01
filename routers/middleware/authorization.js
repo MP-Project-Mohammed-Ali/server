@@ -9,9 +9,8 @@ const authorization = async (req, res, next) => {
     if (result.role === "Admin") {
       next();
     } else if (result.role === "Lawyer") {
-      next(); 
-    } 
-    else {
+      next();
+    } else {
       return res.status(403).json({ massage: "forbidden" });
     }
   } catch (error) {

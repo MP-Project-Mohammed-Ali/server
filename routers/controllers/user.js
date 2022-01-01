@@ -32,7 +32,7 @@ const Register = async (req, res) => {
     FieldOfExpertise,
     Trackslegal,
     price,
-    role
+    role,
   } = req.body;
   const semail = email.toLowerCase();
   const hashpass = await bcrypt.hash(password, SALT);

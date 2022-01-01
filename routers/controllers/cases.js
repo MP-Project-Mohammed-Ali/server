@@ -2,13 +2,13 @@ const casesModel = require("../../db/models/cases");
 const tabModel = require("../../db/models/tab");
 
 const newCase = (req, res) => {
-  const { title, Descraption, laywer,client } = req.body;
+  const { title, Descraption, laywer, client } = req.body;
   const newCases = new casesModel({
     title,
     Descraption,
     // status: isCase ? process.env.PENDING : process.env.APPROVED,
     laywer,
-    client
+    client,
   });
   newCases
     .save()
@@ -42,10 +42,10 @@ const getCase = (req, res) => {
   }
 };
 const showcase = (req, res) => {
-  const { laywer,client } = req.body;
+  const { laywer, client } = req.body;
   console.log(laywer);
   casesModel
-    .find({laywer, client })
+    .find({ laywer, client })
     // .populate("tab", " title Descraption -_id")
     .then((result) => {
       res.status(200).json(result);
@@ -103,7 +103,6 @@ const ChengeCaseStatus = (req, res) => {
     });
 };
 
-
 module.exports = {
   newCase,
   getCase,
@@ -111,5 +110,4 @@ module.exports = {
   updateCase,
   deleteCase,
   ChengeCaseStatus,
-
 };

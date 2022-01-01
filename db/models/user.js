@@ -28,7 +28,7 @@ const user = new mongoose.Schema({
   Education:{type:String},
   FieldOfExpertise: { type: String},
   Trackslegal:{type:String},
-  price:{type:String}
+  price:{type:Number}
   
   
 
