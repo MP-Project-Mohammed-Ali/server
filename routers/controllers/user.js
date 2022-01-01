@@ -19,7 +19,21 @@ const transport = nodemailer.createTransport({
 
 //  REGISTER
 const Register = async (req, res) => {
-  const { name, email, password, isLawyer, type,img,bio,Qualification,Education,FieldOfExpertise,Trackslegal } = req.body;
+  const {
+    name,
+    email,
+    password,
+    isLawyer,
+    type,
+    img,
+    bio,
+    Qualification,
+    Education,
+    FieldOfExpertise,
+    Trackslegal,
+    price,
+    role
+  } = req.body;
   const semail = email.toLowerCase();
   const hashpass = await bcrypt.hash(password, SALT);
   const characters = "0123456789";
@@ -41,7 +55,9 @@ const Register = async (req, res) => {
     Qualification,
     Education,
     FieldOfExpertise,
-    Trackslegal
+    Trackslegal,
+    price,
+    role,
   });
   console.log(newUser);
   newUser
@@ -76,11 +92,14 @@ const AddInformation = (req, res) => {
     Qualification,
     Education,
     FieldOfExpertise,
-    Trackslegal
+    Trackslegal,
   });
-  newInformation.save().then((result)=>{
-    res.json(result)
-  }).catch((err)=>res.send(err))
+  newInformation
+    .save()
+    .then((result) => {
+      res.json(result);
+    })
+    .catch((err) => res.send(err));
 };
 //  VERIFY_ACCOUNT
 const VerifyAccount = async (req, res) => {
