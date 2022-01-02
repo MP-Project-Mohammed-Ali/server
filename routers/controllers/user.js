@@ -32,7 +32,7 @@ const Register = async (req, res) => {
     FieldOfExpertise,
     Trackslegal,
     price,
-    role
+    role,
   } = req.body;
   const semail = email.toLowerCase();
   const hashpass = await bcrypt.hash(password, SALT);
@@ -278,20 +278,24 @@ const DeleteUser = (req, res) => {
 
 //PROFILE_USER
 const ProfileUser = (req, res) => {
-  const { email } = req.params;
+  const { id } = req.params;
   userModel
-    .find({ email: `${email}` })
-    .populate("status")
+    .find({ _id: id })
     .then((result) => {
-      res.send(result);
+      if (result) {
+        res.status(200).json(result);
+      } else {
+        res.status(404).json(result);
+      }
     })
     .catch((err) => {
-      res.send(err);
+      res.satatus(400).json(err);
     });
 };
 
+
 //EDIT_PROFILE
-const EditProfile = (req, res) => {
+const EditProfileUser = (req, res) => {
   const { email } = req.params;
   const { name, newEmail } = req.body;
   userModel
@@ -339,7 +343,7 @@ module.exports = {
   GetUser,
   DeleteUser,
   ProfileUser,
-  EditProfile,
+  EditProfileUser,
   DeleteProfile,
   AddInformation,
 };
