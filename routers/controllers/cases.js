@@ -45,7 +45,8 @@ const showcase = (req, res) => {
   const { laywer,client } = req.body;
   console.log(laywer);
   casesModel
-    .find({laywer, client })
+    .find({laywer, client, isDel:false})
+
     // .populate("tab", " title Descraption -_id")
     .then((result) => {
       res.status(200).json(result);

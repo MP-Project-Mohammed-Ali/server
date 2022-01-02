@@ -293,8 +293,9 @@ const ProfileUser = (req, res) => {
     });
 };
 
+
 //EDIT_PROFILE
-const EditProfile = (req, res) => {
+const EditProfileUser = (req, res) => {
   const { email } = req.params;
   const { name, newEmail } = req.body;
   userModel
@@ -342,7 +343,7 @@ module.exports = {
   GetUser,
   DeleteUser,
   ProfileUser,
-  EditProfile,
+  EditProfileUser,
   DeleteProfile,
   AddInformation,
 };

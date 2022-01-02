@@ -15,7 +15,7 @@ caseRouter.post("/addcase", authentication, newCase);
 caseRouter.get("/show/case/:id", getCase);
 caseRouter.post("/show/allcase", showcase);
 caseRouter.put("/update/:id", authentication, updateCase);
-caseRouter.delete("/delete/case/:id", deleteCase);
+caseRouter.delete("/delete/case/:id",authentication, deleteCase);
 caseRouter.put("/chang/case/:id",ChengeCaseStatus)
 
 module.exports = caseRouter;

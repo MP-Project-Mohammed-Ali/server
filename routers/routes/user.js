@@ -11,7 +11,7 @@ const {
   GetUser,
   DeleteUser,
   ProfileUser,
-  EditProfile,
+  EditProfileUser,
   DeleteProfile,
   AddInformation,
 } = require("./../controllers/user");
@@ -30,8 +30,8 @@ userRouter.delete("/delete/user", DeleteUser);
 
 userRouter.put("/changestatus/:id", ChengeUserStatus);
 
-userRouter.get("/profile/:id", ProfileUser);
-userRouter.put("/edit/Profile/:email", EditProfile);
+userRouter.get("/profile/:id",authentication, ProfileUser);
+userRouter.put("/edit/Profile/:email", EditProfileUser);
 userRouter.delete("/delete/profile/:id", DeleteProfile);
 
 userRouter.get("/display/:_id");
