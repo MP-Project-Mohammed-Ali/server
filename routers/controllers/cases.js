@@ -2,13 +2,13 @@ const casesModel = require("../../db/models/cases");
 const tabModel = require("../../db/models/tab");
 
 const newCase = (req, res) => {
-  const { title, Descraption, laywer,client } = req.body;
+  const { title, Descraption, laywer } = req.body;
   const newCases = new casesModel({
     title,
     Descraption,
-    // status: isCase ? process.env.PENDING : process.env.APPROVED,
+    status:process.env.PENDING,
     laywer,
-    client
+    client:req.token.id
   });
   newCases
     .save()
@@ -55,6 +55,17 @@ const showcase = (req, res) => {
       res.status(400).json(err);
     });
 };
+const laywercase = (req, res) => {
+  console.log("laywer");
+  casesModel
+    .find({laywer:req.token.id,status:process.env.PENDING})
+    .then((result) => {
+      res.status(200).json(result);
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
+};
 const updateCase = (req, res) => {
   const { id } = req.params;
   const { Descraption } = req.body;
@@ -90,7 +101,7 @@ const ChengeCaseStatus = (req, res) => {
   const { id } = req.params;
   const { status_id } = req.body;
 
-  userModel
+  casesModel
     .findByIdAndUpdate({ _id: id }, { status: status_id }, { new: true })
     .then((result) => {
       if (result) {
@@ -112,5 +123,5 @@ module.exports = {
   updateCase,
   deleteCase,
   ChengeCaseStatus,
-
+  laywercase
 };
