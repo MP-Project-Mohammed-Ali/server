@@ -14,6 +14,7 @@ const {
   EditProfileUser,
   DeleteProfile,
   AddInformation,
+  GetUserById
 } = require("./../controllers/user");
 const authentication = require("./../middleware/authentication");
 
