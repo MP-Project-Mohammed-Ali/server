@@ -27,9 +27,11 @@ const CreateTab = (req, res) => {
 };
 
 const GetTab = (req, res) => {
+  const { caseID } = req.body;
+
   tabModel
-    .find({})
-    .populate("caseID", "Descraption", "title")
+    .find({userId:req.token.id, caseID})
+    // .populate("caseID", "Descraption", "title")
 
     .then((result) => {
       res.status(200).json(result);
