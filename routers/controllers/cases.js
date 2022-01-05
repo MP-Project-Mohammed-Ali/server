@@ -23,18 +23,12 @@ const newCase = (req, res) => {
 };
 
 const getCase = (req, res) => {
-  console.log("this request on line 24", req.params);
   const { id } = req.params;
-  console.log("this id on line 26  ", id);
 
   try {
-    casesModel.findOne({ _id: id }).then((result) => {
-      console.log("this is result on line 33", result);
-      if (result.isDel == false) {
-        res.status(200).json(result);
-      } else {
-        res.status(404).send("case deleted");
-      }
+    casesModel.find({ $or: [{laywer: id,isDel:false}, {client:id,isDel:false}] }).populate("status client").then((result) => {
+      res.status(200).json(result);
+     
     });
   } catch (err) {
     res.status(400).json("this err", err);
@@ -59,6 +53,7 @@ const laywercase = (req, res) => {
   console.log("laywer");
   casesModel
     .find({laywer:req.token.id,status:process.env.PENDING})
+    .populate('client')
     .then((result) => {
       res.status(200).json(result);
     })

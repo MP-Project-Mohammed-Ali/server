@@ -10,9 +10,9 @@ const user = new mongoose.Schema({
     default: "61c579806eec66fd5a9a30b6",
   },
   isDelete: { type: Boolean, default: false },
-  case: [{ type: mongoose.Schema.Types.ObjectId, ref: "Cases" }],
-  clients: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-  laweyrs: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  case: { type: mongoose.Schema.Types.ObjectId, ref: "Cases" },
+  clients: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  laweyrs: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   status: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Status",
