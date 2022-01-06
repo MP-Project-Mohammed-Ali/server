@@ -72,7 +72,7 @@ const Register = async (req, res) => {
               <h2>Hello ${semail}</h2>
               <h4>CODE: ${activeCode}</h4>
               <p>Thank you for registering. Please confirm your email by entring the code on the following link</p>
-              <a href=https:/localhost:3000/active/${result._id}> Click here</a>`,
+              <a href=https://estishara.herokuapp.com/active/${result._id}> Click here</a>`,
         })
         .catch((err) => console.log(err));
       res.status(201).json(result);
@@ -147,7 +147,7 @@ const CheckEmail = async (req, res) => {
               <h2>Hello ${result.name}</h2>
               <h4>CODE: ${passwordCode}</h4>
               <p>Please enter the code on the following link and reset your password</p>
-              <a href=http://localhost:3000/reset/${result._id}> Click here</a>
+              <a href=https://estishara.herokuapp.com/reset/${result._id}> Click here</a>
               </div>`,
         });
         console.log(result._id);
