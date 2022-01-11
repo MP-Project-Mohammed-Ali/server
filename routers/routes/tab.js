@@ -6,6 +6,6 @@ const authentication = require("../middleware/authentication");
 
 tabRouter.post("/createtab",authentication, CreateTab);
 
-tabRouter.post("/get/tab",authentication,GetTab)
+tabRouter.post("/get_tab",GetTab)
 
 module.exports = tabRouter;

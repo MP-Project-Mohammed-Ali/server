@@ -30,14 +30,14 @@ const GetTab = (req, res) => {
   const { caseID } = req.body;
 
   tabModel
-    .find({userId:req.token.id, caseID})
+    .find({caseID})
     // .populate("caseID", "Descraption", "title")
 
     .then((result) => {
       res.status(200).json(result);
     })
     .catch((err) => {
-      res.status(400).json("you Don't have authorization");
+      res.status(400).json(err);
     });
 };
 

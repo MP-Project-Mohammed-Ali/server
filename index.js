@@ -23,7 +23,7 @@ app.use(tabRouter)
 const statusRouter =require("./routers/routes/status")
 app.use(statusRouter)
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT||4000;
 app.listen(PORT, () => {
   console.log(`PORT is RUN ON ${PORT} NOW DON'T WORRY `);
 });
