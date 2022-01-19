@@ -6,18 +6,16 @@ const newCase = (req, res) => {
   const newCases = new casesModel({
     title,
     Descraption,
-    status:process.env.PENDING,
+    status: process.env.PENDING,
     laywer,
-    client:req.token.id
+    client: req.token.id,
   });
   newCases
     .save()
     .then((result) => {
-      console.log("result in line 14", result);
       res.status(201).json(result);
     })
     .catch((err) => {
-      console.log(err);
       res.status(400).send(err);
     });
 };
@@ -26,22 +24,26 @@ const getCase = (req, res) => {
   const { id } = req.params;
 
   try {
-    casesModel.find({ $or: [{laywer: id,isDel:false}, {client:id,isDel:false}] }).populate("status client").then((result) => {
-      res.status(200).json(result);
-     
-    });
+    casesModel
+      .find({
+        $or: [
+          { laywer: id, isDel: false },
+          { client: id, isDel: false },
+        ],
+      })
+      .populate("status client")
+      .then((result) => {
+        res.status(200).json(result);
+      });
   } catch (err) {
     res.status(400).json("this err", err);
-    console.log(err);
   }
 };
 const showcase = (req, res) => {
-  const { laywer,client } = req.body;
-  console.log(laywer);
+  const { laywer, client } = req.body;
   casesModel
-    .find({laywer, client, isDel:false})
+    .find({ laywer, client, isDel: false })
 
-    // .populate("tab", " title Descraption -_id")
     .then((result) => {
       res.status(200).json(result);
     })
@@ -50,10 +52,9 @@ const showcase = (req, res) => {
     });
 };
 const laywercase = (req, res) => {
-  console.log("laywer");
   casesModel
-    .find({laywer:req.token.id,status:process.env.PENDING})
-    .populate('client')
+    .find({ laywer: req.token.id, status: process.env.PENDING })
+    .populate("client")
     .then((result) => {
       res.status(200).json(result);
     })
@@ -85,7 +86,6 @@ const deleteCase = (req, res) => {
     .findByIdAndUpdate(id, { $set: { isDel: true } })
     .exec()
     .then((result) => {
-      console.log(result);
       res.status(200).json("case is delete");
     })
     .catch((err) => {
@@ -110,7 +110,6 @@ const ChengeCaseStatus = (req, res) => {
     });
 };
 
-
 module.exports = {
   newCase,
   getCase,
@@ -118,5 +117,5 @@ module.exports = {
   updateCase,
   deleteCase,
   ChengeCaseStatus,
-  laywercase
+  laywercase,
 };

@@ -28,4 +28,3 @@ const getrole = (req, res) => {
 };
 
 module.exports = { create, getrole };
-

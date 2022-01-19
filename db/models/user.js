@@ -17,25 +17,20 @@ const user = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Status",
   },
-  activeCode:{type:String},
-  passwordCode:{type:String},
-  activeAcount:{type:Boolean,default:false},
-   type: { type: String },
+  activeCode: { type: String },
+  passwordCode: { type: String },
+  activeAcount: { type: Boolean, default: false },
+  type: { type: String },
 
-  img:{type:String},
-  bio:{type:String},
-  Qualification:{type:String},
-  Education:{type:String},
-  FieldOfExpertise: { type: String},
-  Trackslegal:{type:String},
-  price:{type:String}
-  
-  
+  img: { type: String },
+  bio: { type: String },
+  Qualification: { type: String },
+  Education: { type: String },
+  FieldOfExpertise: { type: String },
+  Trackslegal: { type: String },
+  price: { type: String },
 
-
-  // ststes: { type: String, enum: ["Pending", "Active"], default: "Pending" },
 });
 
 module.exports = mongoose.model("User", user);
 
-//This file Done

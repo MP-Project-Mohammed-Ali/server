@@ -16,4 +16,3 @@ const cases = new mongoose.Schema({
 
 module.exports = mongoose.model("Cases", cases);
 
-//This File Done

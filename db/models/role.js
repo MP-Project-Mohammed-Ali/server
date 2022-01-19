@@ -7,4 +7,3 @@ const role = new mongoose.Schema({
 
 module.exports = mongoose.model("Role", role);
 
-//This file Done

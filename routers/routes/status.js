@@ -7,9 +7,6 @@ const authorization = require("../middleware/authorization")
 const {
     addStatus,
     getStatus,
-    // getSatatusPending,
-    // getAllStatus,
-    // getStatusbyId,
 }=require("../controllers/status")
 
 statusRouter.post("/status/create",authentication,authorization,addStatus)

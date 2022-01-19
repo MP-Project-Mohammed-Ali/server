@@ -3,7 +3,6 @@ const casesModule = require("../../db/models/cases");
 
 const CreateTab = (req, res) => {
   const { title, Descraption, image, caseID } = req.body;
-  console.log(req.token);
   const newTab = new tabModel({
     title,
     Descraption,
@@ -30,8 +29,7 @@ const GetTab = (req, res) => {
   const { caseID } = req.body;
 
   tabModel
-    .find({caseID})
-    // .populate("caseID", "Descraption", "title")
+    .find({ caseID })
 
     .then((result) => {
       res.status(200).json(result);
@@ -41,4 +39,37 @@ const GetTab = (req, res) => {
     });
 };
 
-module.exports = { CreateTab, GetTab };
+const deleteTab = (req, res) => {
+  const { id } = req.params;
+  tabModel
+    .findByIdAndUpdate(id, { $set: { isDelete: true } })
+    .exec()
+    .then((result) => {
+      res.status(200).json("tab is delete");
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
+};
+
+const updateTab = (req, res) => {
+  const { id } = req.params;
+  const { title, Descraption, image } = req.body;
+
+  tabModel
+    .findByIdAndUpdate(id, {
+      $set: { title: title, Descraption: Descraption, image: image },
+    })
+    .then((result) => {
+      if (result) {
+        res.status(200).json("updated");
+      } else {
+        res.status(400).json(err);
+      }
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
+};
+
+module.exports = { CreateTab, GetTab, deleteTab, updateTab };

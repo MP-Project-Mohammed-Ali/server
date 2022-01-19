@@ -59,7 +59,6 @@ const Register = async (req, res) => {
     price,
     role,
   });
-  console.log(newUser);
   newUser
     .save()
     .then((result) => {
@@ -74,7 +73,7 @@ const Register = async (req, res) => {
               <p>Thank you for registering. Please confirm your email by entring the code on the following link</p>
               <a href=https://estishara.herokuapp.com/active/${result._id}> Click here</a>`,
         })
-        .catch((err) => console.log(err));
+        .catch(err);
       res.status(201).json(result);
     })
     .catch((err) => {
@@ -105,7 +104,6 @@ const AddInformation = (req, res) => {
 const VerifyAccount = async (req, res) => {
   const { id, code } = req.body;
   const user = await userModel.findOne({ _id: id });
-  console.log("user on line 419", user);
   if (user.activeCode == code) {
     userModel
       .findByIdAndUpdate(
@@ -150,7 +148,6 @@ const CheckEmail = async (req, res) => {
               <a href=https://estishara.herokuapp.com/reset/${result._id}> Click here</a>
               </div>`,
         });
-        console.log(result._id);
         res.status(200).json(result);
       })
       .catch((error) => {
@@ -192,20 +189,14 @@ const Login = (req, res) => {
     .findOne({ $or: [{ email }, { name }] })
 
     .then(async (result) => {
-      console.log("the result", result);
       if (result) {
-        console.log(result.email);
         if (email == result.email) {
-          console.log(email);
           const savePassword = await bcrypt.compare(password, result.password);
-          console.log(savePassword);
           const payload = {
             role: result.role,
             id: result._id,
             email: result.email,
           };
-          console.log("this is payload", payload);
-          console.log("the result on line 520", result);
 
           if (savePassword) {
             if (result.activeAcount == true) {
@@ -262,13 +253,11 @@ const GetUser = (req, res) => {
 
 //DELETE_USER
 const DeleteUser = (req, res) => {
-  console.log(req);
   const { id } = req.params;
   userModel
     .findByIdAndUpdate(id, { $set: { isDelete: true } })
     .exec()
     .then((result) => {
-      console.log(result);
       res.status(200).json("Deleted");
     })
     .catch((err) => {
@@ -292,7 +281,6 @@ const ProfileUser = (req, res) => {
       res.satatus(400).json(err);
     });
 };
-
 
 //EDIT_PROFILE
 const EditProfileUser = (req, res) => {
